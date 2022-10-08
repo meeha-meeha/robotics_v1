@@ -39,10 +39,18 @@ void CollectorGuiExternalBridge::publishToggleHelpPage() const {
   _toggleHelpPagePublisher->publish(Empty());
 }
 
-void CollectorGuiExternalBridge::publishRobotAct(
-    [[maybe_unused]]MoveType moveType) const {
-  LOGR("Oh no ... nothing happened ... and the buttons remained locked. "
-       "Maybe something will unlock them externally?");
+void CollectorGuiExternalBridge::publishRobotAct(MoveType moveType) const {
+
+  // Publish to movement topic
+  int8_t type = getMoveTypeField(moveType);
+  RobotMoveType msg;
+  msg.move_type = type;
+  _robotActPublisher->publish(msg);
+  
+  // Unlock input
+  _outInterface.enablePlayerInputCb();
+
+
 }
 
 void CollectorGuiExternalBridge::publishUserAuthenticate(const UserData &data) {
@@ -50,6 +58,7 @@ void CollectorGuiExternalBridge::publishUserAuthenticate(const UserData &data) {
   msg.user = data.user;
   msg.commit_sha = data.commitSha;
   msg.repository = data.repository;
+  std::cout << msg.user << " " << msg.commit_sha << " " << msg.repository << std::endl;
   _userAuthenticatePublisher->publish(msg);
 }
 
@@ -77,8 +86,6 @@ ErrorCode CollectorGuiExternalBridge::initOutInterface(
 ErrorCode CollectorGuiExternalBridge::initCommunication() {
   using namespace std::placeholders;
   constexpr auto queueSize = 10;
-  _userAuthenticatePublisher = create_publisher<UserAuthenticate>(
-      USER_AUTHENTICATE_TOPIC, queueSize);
 
   rclcpp::QoS qos(queueSize);
   qos.transient_local(); //enable message latching for late joining subscribers
@@ -88,6 +95,12 @@ ErrorCode CollectorGuiExternalBridge::initCommunication() {
 
   rclcpp::PublisherOptions publisherOptions;
   publisherOptions.callback_group = _publishersCallbackGroup;
+
+  _userAuthenticatePublisher = create_publisher<UserAuthenticate>(
+      USER_AUTHENTICATE_TOPIC, qos, publisherOptions);
+  
+  _robotActPublisher = create_publisher<RobotMoveType>(ROBOT_MOVE_TYPE_TOPIC,
+      qos, publisherOptions);
 
   _toggleHelpPagePublisher = create_publisher<Empty>(TOGGLE_HELP_PAGE_TOPIC,
       queueSize, publisherOptions);
