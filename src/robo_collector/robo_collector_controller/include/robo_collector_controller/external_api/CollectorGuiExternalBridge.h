@@ -11,6 +11,9 @@
 #include "game_engine/defines/ActionEventDefines.h"
 #include "utils/ErrorCode.h"
 
+// MoveType Message
+#include "robo_collector_interfaces/msg/robot_move_type.hpp"
+
 //Own components headers
 
 //Forward declarations
@@ -35,6 +38,7 @@ public:
 private:
   using UserAuthenticate = robo_collector_interfaces::msg::UserAuthenticate;
   using Empty = std_msgs::msg::Empty;
+  using RobotMoveType = robo_collector_interfaces::msg::RobotMoveType;
 
   ErrorCode initOutInterface(
       const CollectorGuiExternalBridgeOutInterface &outInterface);
@@ -48,6 +52,9 @@ private:
   rclcpp::Publisher<Empty>::SharedPtr _toggleHelpPagePublisher;
   rclcpp::Publisher<Empty>::SharedPtr _toggleDebugInfoPublisher;
 
+  rclcpp::Publisher<RobotMoveType>::SharedPtr _robotActPublisher;
+
+  // should subscribe to /enable_input topic!
   rclcpp::Subscription<Empty>::SharedPtr _enableRobotTurnSubscription;
   rclcpp::Subscription<Empty>::SharedPtr _shutdownControllerSubscription;
 
