@@ -40,17 +40,11 @@ void CollectorGuiExternalBridge::publishToggleHelpPage() const {
 }
 
 void CollectorGuiExternalBridge::publishRobotAct(MoveType moveType) const {
-
   // Publish to movement topic
   int8_t type = getMoveTypeField(moveType);
   RobotMoveType msg;
   msg.move_type = type;
   _robotActPublisher->publish(msg);
-  
-  // Unlock input
-  _outInterface.enablePlayerInputCb();
-
-
 }
 
 void CollectorGuiExternalBridge::publishUserAuthenticate(const UserData &data) {
