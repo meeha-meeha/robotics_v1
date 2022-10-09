@@ -19,4 +19,4 @@
     use_local_controller_mode: True
     user: 'Mihail Milchev'
     repository: 'https://github.com/meeha-meeha/robotics_v1'
-    commit_sha: 009609413435bcf66994372ccb1c625afc50c1e3
+    commit_sha: 0964f98b97dd18693363862762e6f6be5bf1c9a1
